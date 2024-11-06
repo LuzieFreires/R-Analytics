@@ -1,0 +1,12 @@
+---
+title: "RWorksheet#5_group(freires,rocillo,sanico)"
+output: pdf_document
+date: "2024-11-06"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Worksheet for R Programming
+
