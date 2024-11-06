@@ -9,3 +9,119 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 Extracting TV Shows Reviews
+
+1. Each group needs to extract the top 50 tv shows in Imdb.com. It will include the rank, the title of the
+tv show, tv rating, the number of people who voted, the number of episodes, the year it was released.
+It will also include the number of user reviews and the number of critic reviews, as well as the popularity
+rating for each tv shows.
+
+```{r}
+library(polite)
+library(rvest) 
+
+url <- "https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250"
+
+session <- bow(url,
+               user_agent = "top 50 tv shows")
+session
+session_page <- scrape(session)
+
+div_elements <- html_nodes(session_page,'div.sg-col-4-of-24.sg-col-4-of-12.s-result-item.s-asin.sg-col-4-of-16.sg-col.s-widget-spacing-small.sg-col-4-of-20')
+
+
+<meta name="viewport" content="width=device-width">
+```
+
+```{r}
+ranks <- character()
+title <- character()
+tv_rating <- character()
+num_of_people_voted <- character()
+num_of_episodes <- character()
+year_it_was_realeased <- character()
+
+num_of_user_reviews <- character()
+num_of_critic_reviews <- character()
+popularity <- character()
+rating_for_each_tv_shows <- character()
+
+```
+
+```{r}
+year it was released <- <div class="sc-5bc66c50-5 hVarDB cli-title-metadata"><span class="sc-5bc66c50-6 OOdsw cli-title-metadata-item">2008–2013</span><span class="sc-5bc66c50-6 OOdsw cli-title-metadata-item">62 eps</span><span class="sc-5bc66c50-6 OOdsw cli-title-metadata-item">TV-MA</span></div>
+
+```
+
+
+
+
+```
+
+2. From the 50 tv shows, select at least 5 tv shows to scrape 20 user reviews that will include the reviewer’s
+name, date of reviewed, user rating, title of the review, the numbers for “is helpful” and “is not helpful”,
+and text reviews.
+
+```{r}
+```
+
+3. Create a time series graph for the tv shows released by year. Which year has the most number of tv
+shows released?
+
+```{r}
+```
+
+Extracting Amazon Product Reviews
+
+#sunscreen
+```{r}
+
+library(rvest)
+library(polite)
+
+url <- “https://www.amazon.com/s?i=specialty-aps&bbn=16225006011&rh=n%3A%2116225006011%2Cn%3A11058281&ref=nav_em__nav_desktop_sa_intl_makeup_0_2_11_2”
+session <- bow(url,
+               user_agent = "Student's Demo Educational")
+session
+
+session_page <- scrape(session)
+div_elements <- html_nodes(session_page,'sg-col-20-of-24 s-matching-dir sg-col-16-of-20 sg-col sg-col-8-of-12 sg-col-12-of-16')
+
+links <- character()
+img_srcs <- character()
+titles <- character()
+prices <- character()
+ratings <- character()
+
+for (div_element in div_elements) {
+  
+  for (div_element in div_elements) {
+  
+  a_element <- html_node(div_element, '<a-link-normal celwidget" id="customer-reviews-content" aria-label="Top reviews" href="#")
+  
+ a-link-normal a-color-tertiary" href="/Beauty-Makeup-Skin-Hair-Products/b/ref=dp_bc_aui_C_1?ie=UTF8&amp;node=3760911">
+
+```
+
+#Amazon
+```{r}
+library(rvest)
+library(polite)
+
+url <- "https://www.amazon.com/s?i=specialty-aps&bbn=16225006011&rh=n%3A%2116225006011%2Cn%3A11058281&ref=nav_em__nav_desktop_sa_intl_makeup_0_2_11_2
+"
+session <- bow(url,
+               user_agent = "Student's Demo Educational")
+session
+session_page <- scrape(session)
+
+links <- character()
+img_srcs <- character()
+categories <- character()
+products <- character()
+price <- numeric()
+description <- character()
+ratings <- numeric()
+reviews <- character()
+
+<a id="customer-reviews-content" aria-label="Top reviews" class="a-link-normal celwidget" href="#" data-csa-c-id="imrjmp-44equr-z2bckm-9r0ofd" data-cel-widget="customer-reviews-content"></a>
+```
