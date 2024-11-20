@@ -8,6 +8,7 @@ date: "2024-11-06"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
 Extracting TV Shows Reviews
 
 1. Each group needs to extract the top 50 tv shows in Imdb.com. It will include the rank, the title of the
@@ -48,14 +49,13 @@ rating_for_each_tv_shows <- character()
 ```
 
 ```{r}
-year it was released <- <div class="sc-5bc66c50-5 hVarDB cli-title-metadata"><span class="sc-5bc66c50-6 OOdsw cli-title-metadata-item">2008–2013</span><span class="sc-5bc66c50-6 OOdsw cli-title-metadata-item">62 eps</span><span class="sc-5bc66c50-6 OOdsw cli-title-metadata-item">TV-MA</span></div>
+year_it_was_realeased <_ "sc-5bc66c50-5 hVarDB cli-title-metadata" class="sc-5bc66c50-6 OOdsw cli-title-metadata-item">2008–2013</span><span class="sc-5bc66c50-6 OOdsw cli-title-metadata-item">62 eps</span><span class="sc-5bc66c50-6 OOdsw cli-title-metadata-item">TV-MA</span></div>
 
 ```
 
 
 
 
-```
 
 2. From the 50 tv shows, select at least 5 tv shows to scrape 20 user reviews that will include the reviewer’s
 name, date of reviewed, user rating, title of the review, the numbers for “is helpful” and “is not helpful”,
@@ -101,6 +101,7 @@ for (div_element in div_elements) {
  a-link-normal a-color-tertiary" href="/Beauty-Makeup-Skin-Hair-Products/b/ref=dp_bc_aui_C_1?ie=UTF8&amp;node=3760911">
 
 ```
+
 
 #Amazon
 ```{r}
