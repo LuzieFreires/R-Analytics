@@ -172,7 +172,7 @@ library(kableExtra)
 library(rmarkdown)
 
 
-makeup_url <- 'https://www.amazon.com/s?k=BLUSH+ON&rh=n%3A11058281&ref=nb_sb_noss'
+makeup_url <- "https://www.amazon.com/s?k=lipstick&crid=1T047TIYTCQV2&sprefix=lip%2Caps%2C436&ref=nb_sb_ss_ts-doa-p_8_3"
 
 session1 <- bow(makeup_url,
                user_agent = "Educational")
@@ -180,7 +180,19 @@ session1
 
 ```
 
+```{r}
+library(rvest)
 
+amazondf1 <- data.frame()
 
-skincare https://www.amazon.com/s?i=specialty-aps&bbn=16225006011&rh=n%3A%2116225006011%2Cn%3A11060451&ref=nav_em__nav_desktop_sa_intl_skin_care_0_2_11_3
+page1 <- scrape(session1)
+
+price1 <- page1 %>%
+  html_nodes('.a-price .a-offscreen') %>% 
+  html_text(trim = TRUE) %>% 
+  gsub("[^0-9\\.]", "", .)
+
+price1
+```
+
 
