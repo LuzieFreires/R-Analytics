@@ -189,10 +189,47 @@ page1 <- scrape(session1)
 
 price1 <- page1 %>%
   html_nodes('.a-price .a-offscreen') %>% 
-  html_text(trim = TRUE) %>% 
-  gsub("[^0-9\\.]", "", .)
+  html_text()
 
-price1
+price_1 <- data.frame(
+    price1_ = price1[1:30])
+
+price_1
+
+```
+
+```{r}
+
+description1 <- page1 %>%
+  html_nodes('.a-color-base.a-text-normal') %>% 
+  html_text()
+
+description_1 <- data.frame(
+   descrip1_ = description1[1:30])
+
+description_1
+```
+```{r}
+
+ratings1 <- page1 %>%
+  html_nodes('.a-icon-alt') %>% 
+  html_text()
+ 
+ratings_1 <- data.frame(
+    rates = ratings1[1:30])
+
+ratings_1
+```
+
+```{r}
+reviews1 <- page1 %>%
+  html_nodes('div.a-row.a-spacing-small.review-data') %>% 
+  html_text()
+
+reviews_1 <- data.frame(
+    reviews = reviews1[1:30])
+
+reviews_1
 ```
 
 
