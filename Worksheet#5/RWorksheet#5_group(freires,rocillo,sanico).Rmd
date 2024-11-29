@@ -17,112 +17,145 @@ It will also include the number of user reviews and the number of critic reviews
 rating for each tv shows.
 
 ```{r}
+library(rvest)  
+library(httr)
+library(dplyr)
 library(polite)
-library(rvest) 
+library(kableExtra)
+library(rmarkdown)
 
-url <- "https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250"
+url <- 'https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250'
 
 session <- bow(url,
-               user_agent = "top 50 tv shows")
+               user_agent = "Educational")
 session
-session_page <- scrape(session)
-
-div_elements <- html_nodes(session_page,'div.sg-col-4-of-24.sg-col-4-of-12.s-result-item.s-asin.sg-col-4-of-16.sg-col.s-widget-spacing-small.sg-col-4-of-20')
-
-
-<meta name="viewport" content="width=device-width">
 ```
 
-```{r}
-ranks <- character()
-title <- character()
-tv_rating <- character()
-num_of_people_voted <- character()
-num_of_episodes <- character()
-year_it_was_realeased <- character()
-
-num_of_user_reviews <- character()
-num_of_critic_reviews <- character()
-popularity <- character()
-rating_for_each_tv_shows <- character()
-
-```
-
-```{r}
-year_it_was_realeased <_ "sc-5bc66c50-5 hVarDB cli-title-metadata" class="sc-5bc66c50-6 OOdsw cli-title-metadata-item">2008–2013</span><span class="sc-5bc66c50-6 OOdsw cli-title-metadata-item">62 eps</span><span class="sc-5bc66c50-6 OOdsw cli-title-metadata-item">TV-MA</span></div>
-
-```
-
-
-
-
-
-2. From the 50 tv shows, select at least 5 tv shows to scrape 20 user reviews that will include the reviewer’s
-name, date of reviewed, user rating, title of the review, the numbers for “is helpful” and “is not helpful”,
-and text reviews.
-
-```{r}
-```
-
-3. Create a time series graph for the tv shows released by year. Which year has the most number of tv
-shows released?
-
-```{r}
-```
-
-Extracting Amazon Product Reviews
-
-#sunscreen
-```{r}
-
-library(rvest)
-library(polite)
-
-url <- “https://www.amazon.com/s?i=specialty-aps&bbn=16225006011&rh=n%3A%2116225006011%2Cn%3A11058281&ref=nav_em__nav_desktop_sa_intl_makeup_0_2_11_2”
-session <- bow(url,
-               user_agent = "Student's Demo Educational")
-session
-
-session_page <- scrape(session)
-div_elements <- html_nodes(session_page,'sg-col-20-of-24 s-matching-dir sg-col-16-of-20 sg-col sg-col-8-of-12 sg-col-12-of-16')
-
-links <- character()
-img_srcs <- character()
-titles <- character()
-prices <- character()
-ratings <- character()
-
-for (div_element in div_elements) {
-  
-  for (div_element in div_elements) {
-  
-  a_element <- html_node(div_element, '<a-link-normal celwidget" id="customer-reviews-content" aria-label="Top reviews" href="#")
-  
- a-link-normal a-color-tertiary" href="/Beauty-Makeup-Skin-Hair-Products/b/ref=dp_bc_aui_C_1?ie=UTF8&amp;node=3760911">
-
-```
-
-
-#Amazon
 ```{r}
 library(rvest)
-library(polite)
+library(dplyr)
 
-url <- "https://www.amazon.com/s?i=specialty-aps&bbn=16225006011&rh=n%3A%2116225006011%2Cn%3A11058281&ref=nav_em__nav_desktop_sa_intl_makeup_0_2_11_2
-"
-session <- bow(url,
-               user_agent = "Student's Demo Educational")
-session
-session_page <- scrape(session)
+title <- read_html(url) %>%
+  html_nodes('h3.ipc-title__text') %>% 
+  html_text
 
-links <- character()
-img_srcs <- character()
-categories <- character()
-products <- character()
-price <- numeric()
-description <- character()
-ratings <- numeric()
-reviews <- character()
 
-<a id="customer-reviews-content" aria-label="Top reviews" class="a-link-normal celwidget" href="#" data-csa-c-id="imrjmp-44equr-z2bckm-9r0ofd" data-cel-widget="customer-reviews-content"></a>
+data_ <- data.frame(
+    titleDf = title[1:25])
+
+data_
 ```
+
+```{r}
+title_rank <- as.data.frame(data_, stringsAsFactors = FALSE)
+colnames(title_rank) <- "rank"
+
+split_df <- strsplit(as.character(title_rank$rank), "\\.", fixed = FALSE)
+split_df <- data.frame(do.call(rbind, split_df), stringsAsFactors = FALSE)
+colnames(split_df) <- c("rank", "title")
+
+split_df <- split_df %>% select(rank, title)
+
+split_df$title <- trimws(split_df$title)
+
+title_rank <- split_df
+title_rank
+```
+
+```{r}
+rating <- read_html(url) %>%
+  html_nodes('.ipc-rating-star--rating') %>%
+  html_text()
+
+rating_ <- data.frame(
+    ratingDf = rating[2:25])
+
+rating_
+```
+
+```{r}
+voted <- read_html(url) %>%
+  html_nodes('.ipc-rating-star--voteCount') %>%
+  html_text()
+  vot <- gsub('[()]', '', voted)
+  
+  voted_ <- data.frame(
+    votedDf = voted[2:25])
+
+voted_
+```
+
+```{r}
+
+episodes <- read_html(url) %>%
+  html_nodes("span.sc-300a8231-7.eaXxft.cli-title-metadata-item:nth-of-type(2)") %>%
+  html_text()
+  
+
+episodes_ <- data.frame(
+    episodesDf = episodes[1:25])
+
+episodes_
+```
+
+```{r}
+years <- read_html(url) %>%
+  html_nodes('span.sc-300a8231-7.eaXxft.cli-title-metadata-item:nth-of-type(1)') %>%
+  html_text()
+
+years_ <- data.frame(
+    years_releases = years[1:25])
+
+years_
+
+```
+
+```{r}
+tv_shows <- data.frame(
+  Rank = title_rank[,1],
+  Title = title_rank[,2],
+  Rating = rating,
+  Voters = voted,
+  Episodes = episodes,
+  Year = years
+)
+tv_shows
+```
+
+```{r}
+home_link <- 'https://www.imdb.com/chart/toptv/'
+main_page <- read_html(home_link)
+
+links <- main_page %>%
+  html_nodes("a.ipc-title-link-wrapper") %>%
+  html_attr("href")
+
+show_url_df <- do.call(rbind, lapply(links, function(link) {
+  complete_link <- paste0("https://imdb.com", link)
+
+ usrv_link <- read_html(complete_link)
+  usrv_link_page <- usrv_link %>%
+    html_nodes('a.isReview') %>%
+    html_attr("href")
+  
+   critic <- usrv_link %>%
+              html_nodes("span.score") %>%
+              html_text()
+  critic_df <- data.frame(Critic_Reviews = critic[2], stringsAsFactors = FALSE)
+  
+ pop_rating <- usrv_link %>%
+              html_nodes('[data-testid="hero-rating-bar__popularity__score"]') %>%
+              html_text()
+  
+   usrv <- read_html(paste0("https://imdb.com", usrv_link_page[1]))
+  usrv_count <- usrv %>%
+    html_nodes('[data-testid="tturv-total-reviews"]') %>%
+    html_text()
+
+ return(data.frame(Show_Link = complete_link, User_Reviews = usrv_count, Critic_Reviews = critic[2], Popularity_Rating = pop_rating)) 
+}))
+
+shows <- cbind(tv_shows, show_url_df)
+shows
+```
+
