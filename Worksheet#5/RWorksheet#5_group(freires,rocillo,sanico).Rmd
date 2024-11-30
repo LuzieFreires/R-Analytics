@@ -158,12 +158,89 @@ show_url_df <- do.call(rbind, lapply(links, function(link) {
 shows <- cbind(tv_shows, show_url_df)
 shows
 ```
+2. From the 50 tv shows, select at least 5 tv shows to scrape 20 user reviews that will include the reviewer’s name, date of reviewed, user rating, title of the review, the numbers for “is helpful” and “is not helpful”, and text reviews.
+
+```{r}
+library(rvest)  
+library(dplyr)
+
+show_urls <- c(
+  'https://www.imdb.com/title/tt0903747/reviews/?ref_=tt_ov_urv',   # Breaking Bad
+  'https://www.imdb.com/title/tt5491994/reviews/?ref_=tt_ov_ql_2',  # Planet Earth II
+  'https://www.imdb.com/title/tt0795176/reviews/?ref_=tt_ov_ql_2',  # Planet Earth
+  'https://www.imdb.com/title/tt0185906/reviews/?ref_=tt_ov_ql_2',  # Band of Brothers
+  'https://www.imdb.com/title/tt7366338/reviews/?ref_=tt_ov_ql_2'   # Chernobyl
+)
+
+scrape_reviews <- function(show_url) {
+  
+  review_page <- read_html(show_url)
+  
+  show_name <- review_page %>%
+    html_nodes('h2') %>%      
+    html_text() %>%
+    trimws()
+
+  reviewers <- review_page %>%
+    html_nodes('a.ipc-link--base[data-testid="author-link"]') %>%
+    html_text()
+
+  review_dates <- review_page %>%
+    html_nodes('.review-date') %>%
+    html_text()
+  
+  user_ratings <- review_page %>%
+    html_nodes('.ipc-rating-star--rating') %>%
+    html_text() %>%
+    as.numeric()
+
+  review_titles <- review_page %>%
+    html_nodes('h3.ipc-title__text') %>%
+    html_text()
+
+  helpful_count <- review_page %>%
+    html_nodes('.ipc-voting__label__count--up') %>%
+    html_text() %>%
+    as.numeric()
+
+  not_helpful_count <- review_page %>%
+    html_nodes('.ipc-voting__label__count--down') %>%
+    html_text() %>%
+    as.numeric()
+
+  review_text <- review_page %>%
+    html_nodes('.ipc-html-content-inner-div') %>%
+    html_text()
+  
+  review_text <- trimws(review_text) 
+
+  reviews <- data.frame(
+    Show = show_name,
+    Reviewer = reviewers[1:20],
+    Date = review_dates[1:20],
+    UserRating = user_ratings[1:20],
+    ReviewTitle = review_titles[1:20],
+    HelpfulCount = helpful_count[1:20],
+    NotHelpfulCount = not_helpful_count[1:20],
+    ReviewText = review_text[1:20]
+  )
+  
+  return(reviews)
+}
+
+all_reviews <- lapply(show_urls, scrape_reviews)
+reviews_df <- bind_rows(all_reviews)
+print(reviews_df)
+
+```
+
 
 4. Select 5 categories from Amazon and select 30 products from each category.
 
 5. Extract the price, description, ratings and reviews of each product.
 
 ```{r}
+
 library(rvest)
 library(httr)
 library(dplyr)
@@ -181,6 +258,7 @@ session1
 ```
 
 ```{r}
+
 library(rvest)
 
 amazondf1 <- data.frame()
@@ -209,6 +287,7 @@ description_1 <- data.frame(
 
 description_1
 ```
+
 ```{r}
 
 ratings1 <- page1 %>%
@@ -221,15 +300,107 @@ ratings_1 <- data.frame(
 ratings_1
 ```
 
+
 ```{r}
-reviews1 <- page1 %>%
-  html_nodes('div.a-row.a-spacing-small.review-data') %>% 
-  html_text()
 
-reviews_1 <- data.frame(
-    reviews = reviews1[1:30])
+skincare_url <- 'https://www.amazon.com/s?k=face+mask&rh=n%3A11060451&ref=nb_sb_noss'
 
-reviews_1
+session2 <- bow(skincare_url,
+               user_agent = "Educational")
+session2
+
 ```
 
+```{r}
+library(rvest)
+
+amazondf2 <- data.frame()
+
+page2 <- scrape(session2)
+
+price2 <- page2 %>%
+  html_nodes('.a-price .a-offscreen') %>% 
+  html_text(trim = TRUE)
+
+price_2 <- data.frame(
+    price2_ = price2[1:30])
+
+price_2
+
+```
+```{r}
+description2 <- page2 %>%
+  html_nodes('.a-color-base.a-text-normal') %>% 
+  html_text(trim = TRUE) 
+
+description_2 <- data.frame(
+   descrip2_ = description2[1:30])
+
+description_2
+```
+```{r}
+ratings2 <- page2 %>%
+  html_nodes('.a-icon-alt') %>% 
+  html_text()
+ 
+ratings_2 <- data.frame(
+    Rates2 = ratings2[1:30])
+
+ratings_2
+```
+```{r}
+  
+fragrance_url <- 'https://www.amazon.com/s?k=women&rh=n%3A11056591&ref=nb_sb_noss'
+
+session3 <- bow(fragrance_url,
+               user_agent = "Educational")
+session3
+
+
+```
+
+```{r}
+
+library(rvest)
+
+amazondf3 <- data.frame()
+
+page3 <- scrape(session3)
+
+price3 <- page3 %>%
+  html_nodes('.a-price .a-offscreen') %>% 
+  html_text(trim = TRUE)
+
+price_3 <- data.frame(
+    price3_ = price3[1:30])
+
+price_3
+
+```
+```{r}
+description3 <- page3 %>%
+  html_nodes('.a-color-base.a-text-normal') %>% 
+  html_text(trim = TRUE)
+
+description_3 <- data.frame(
+   Description3 = description3[1:30])
+
+description_3
+```
+```{r}
+
+ratings3 <- page3 %>%
+  html_nodes('.a-icon-alt') %>% 
+  html_text()
+
+rating_3 <- ratings_3 <- data.frame(
+    Ratings3 = ratings3[1:30])
+
+ratings_3
+
+```
+```{r}
+
+
+```
 
