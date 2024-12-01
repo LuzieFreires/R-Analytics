@@ -267,16 +267,10 @@ page1 <- scrape(session1)
 
 price1 <- page1 %>%
   html_nodes('.a-price .a-offscreen') %>% 
-  html_text()
+  html_text() 
 
 price_1 <- data.frame(
-    price1_ = price1[1:30])
-
-price_1
-
-```
-
-```{r}
+    Price1 = price1[1:30])
 
 description1 <- page1 %>%
   html_nodes('.a-color-base.a-text-normal') %>% 
@@ -285,20 +279,24 @@ description1 <- page1 %>%
 description_1 <- data.frame(
    descrip1_ = description1[1:30])
 
-description_1
-```
-
-```{r}
-
 ratings1 <- page1 %>%
   html_nodes('.a-icon-alt') %>% 
-  html_text()
+  html_text() %>%
+  gsub(" out of 5 stars", "", .)
  
 ratings_1 <- data.frame(
     rates = ratings1[1:30])
 
-ratings_1
+amazondf1 <- data.frame(
+  Prices = price_1,
+  Descriptions = description_1,
+  Ratings = ratings_1,
+   stringsAsFactors = FALSE)
+
+amazondf1
+
 ```
+
 
 
 ```{r}
@@ -325,10 +323,6 @@ price2 <- page2 %>%
 price_2 <- data.frame(
     price2_ = price2[1:30])
 
-price_2
-
-```
-```{r}
 description2 <- page2 %>%
   html_nodes('.a-color-base.a-text-normal') %>% 
   html_text(trim = TRUE) 
@@ -336,17 +330,21 @@ description2 <- page2 %>%
 description_2 <- data.frame(
    descrip2_ = description2[1:30])
 
-description_2
-```
-```{r}
 ratings2 <- page2 %>%
   html_nodes('.a-icon-alt') %>% 
-  html_text()
+  html_text() %>%
+  gsub(" out of 5 stars", "", .)
  
 ratings_2 <- data.frame(
     Rates2 = ratings2[1:30])
 
-ratings_2
+amazondf2 <- data.frame(
+  Prices = price_2,
+  Descriptions = description_2,
+  Ratings = ratings_2,
+  stringsAsFactors = FALSE)
+
+amazondf2
 ```
 ```{r}
   
@@ -374,10 +372,6 @@ price3 <- page3 %>%
 price_3 <- data.frame(
     price3_ = price3[1:30])
 
-price_3
-
-```
-```{r}
 description3 <- page3 %>%
   html_nodes('.a-color-base.a-text-normal') %>% 
   html_text(trim = TRUE)
@@ -385,22 +379,28 @@ description3 <- page3 %>%
 description_3 <- data.frame(
    Description3 = description3[1:30])
 
-description_3
-```
-```{r}
-
 ratings3 <- page3 %>%
   html_nodes('.a-icon-alt') %>% 
-  html_text()
+  html_text() %>%
+  gsub(" out of 5 stars", "", .)
 
 rating_3 <- ratings_3 <- data.frame(
     Ratings3 = ratings3[1:30])
 
-ratings_3
+amazondf3 <- data.frame(
+  Prices = price_3,
+  Descriptions = description_3,
+  Ratings = ratings_3,
+  stringsAsFactors = FALSE)
 
+amazondf3
 ```
 ```{r}
+nailcare_url <- "https://www.amazon.com/s?k=nail+polish&rh=n%3A17242866011&ref=nb_sb_noss"
 
+session4 <- bow(nailcare_url,
+               user_agent = "Educational")
+session4
 
 ```
 
