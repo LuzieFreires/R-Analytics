@@ -234,6 +234,28 @@ print(reviews_df)
 
 ```
 
+3. Create a time series graph for the tv shows released by year. Which year has the most number of tv shows released?
+
+```{r}
+library(ggplot2)
+
+shows$Year <- as.numeric(substr(shows$Year, 1, 4))
+shows <- shows %>% filter(!is.na(Year))
+
+shows_by_year <- shows %>%
+  group_by(Year) %>%
+  summarize(Number_of_Shows = n(), .groups = "drop")
+
+ggplot(shows_by_year, aes(x = Year, y = Number_of_Shows)) +
+  geom_line(color = "blue") +
+  geom_point(color = "yellow") +
+  labs(title = "Number of TV Shows Released by Year",
+       x = "Year",
+       y = "Number of TV Shows") +
+  theme_minimal()
+
+```
+
 
 4. Select 5 categories from Amazon and select 30 products from each category.
 
