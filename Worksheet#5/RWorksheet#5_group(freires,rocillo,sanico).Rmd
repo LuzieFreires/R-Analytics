@@ -267,30 +267,25 @@ page1 <- scrape(session1)
 
 price1 <- page1 %>%
   html_nodes('.a-price .a-offscreen') %>% 
-  html_text() 
-
-price_1 <- data.frame(
-    Price1 = price1[1:30])
-
+  html_text(trim = TRUE) %>%
+  gsub("[^0-9\\.]", "", .) %>%
+  head(30)
+  
 description1 <- page1 %>%
   html_nodes('.a-color-base.a-text-normal') %>% 
-  html_text()
-
-description_1 <- data.frame(
-   descrip1_ = description1[1:30])
+  html_text() %>%
+  head(30)
 
 ratings1 <- page1 %>%
   html_nodes('.a-icon-alt') %>% 
   html_text() %>%
-  gsub(" out of 5 stars", "", .)
- 
-ratings_1 <- data.frame(
-    rates = ratings1[1:30])
+  gsub(" out of 5 stars", "", .) %>%
+  head(30)
 
 amazondf1 <- data.frame(
-  Prices = price_1,
-  Descriptions = description_1,
-  Ratings = ratings_1,
+  Prices = price1,
+  Descriptions = description1,
+  Ratings = ratings1,
    stringsAsFactors = FALSE)
 
 amazondf1
@@ -318,31 +313,26 @@ page2 <- scrape(session2)
 
 price2 <- page2 %>%
   html_nodes('.a-price .a-offscreen') %>% 
-  html_text(trim = TRUE)
-
-price_2 <- data.frame(
-    price2_ = price2[1:30])
-
+  html_text(trim = TRUE) %>%
+  gsub("[^0-9\\.]", "", .) %>%
+  head(30)
+  
 description2 <- page2 %>%
   html_nodes('.a-color-base.a-text-normal') %>% 
-  html_text(trim = TRUE) 
-
-description_2 <- data.frame(
-   descrip2_ = description2[1:30])
+  html_text() %>%
+  head(30)
 
 ratings2 <- page2 %>%
   html_nodes('.a-icon-alt') %>% 
   html_text() %>%
-  gsub(" out of 5 stars", "", .)
- 
-ratings_2 <- data.frame(
-    Rates2 = ratings2[1:30])
+  gsub(" out of 5 stars", "", .) %>%
+  head(30)
 
 amazondf2 <- data.frame(
-  Prices = price_2,
-  Descriptions = description_2,
-  Ratings = ratings_2,
-  stringsAsFactors = FALSE)
+  Prices = price2,
+  Descriptions = description2,
+  Ratings = ratings2,
+   stringsAsFactors = FALSE)
 
 amazondf2
 ```
@@ -367,31 +357,26 @@ page3 <- scrape(session3)
 
 price3 <- page3 %>%
   html_nodes('.a-price .a-offscreen') %>% 
-  html_text(trim = TRUE)
-
-price_3 <- data.frame(
-    price3_ = price3[1:30])
-
+  html_text(trim = TRUE) %>%
+  gsub("[^0-9\\.]", "", .) %>%
+  head(30)
+  
 description3 <- page3 %>%
   html_nodes('.a-color-base.a-text-normal') %>% 
-  html_text(trim = TRUE)
-
-description_3 <- data.frame(
-   Description3 = description3[1:30])
+  html_text() %>%
+  head(30)
 
 ratings3 <- page3 %>%
   html_nodes('.a-icon-alt') %>% 
   html_text() %>%
-  gsub(" out of 5 stars", "", .)
-
-rating_3 <- ratings_3 <- data.frame(
-    Ratings3 = ratings3[1:30])
+  gsub(" out of 5 stars", "", .) %>%
+  head(30)
 
 amazondf3 <- data.frame(
-  Prices = price_3,
-  Descriptions = description_3,
-  Ratings = ratings_3,
-  stringsAsFactors = FALSE)
+  Prices = price3,
+  Descriptions = description3,
+  Ratings = ratings3,
+   stringsAsFactors = FALSE)
 
 amazondf3
 ```
@@ -403,4 +388,198 @@ session4 <- bow(nailcare_url,
 session4
 
 ```
+```{r}
+library(rvest)
+
+amazondf4 <- data.frame()
+
+page4 <- scrape(session4)
+
+price4 <- page4 %>%
+  html_nodes('.a-price .a-offscreen') %>% 
+  html_text(trim = TRUE) %>%
+  gsub("[^0-9\\.]", "", .) %>%
+  head(30)
+  
+description4 <- page4 %>%
+  html_nodes('.a-color-base.a-text-normal') %>% 
+  html_text() %>%
+  head(30)
+
+ratings4 <- page4 %>%
+  html_nodes('.a-icon-alt') %>% 
+  html_text() %>%
+  gsub(" out of 5 stars", "", .) %>%
+  head(30)
+
+amazondf4 <- data.frame(
+  Prices = price4,
+  Descriptions = description4,
+  Ratings = ratings4,
+   stringsAsFactors = FALSE)
+
+amazondf4
+
+```
+```{r}
+
+ Haircare_url <- "https://www.amazon.com/b/?node=11057971&ref_=Oct_d_odnav_d_11057241_0&pd_rd_w=5q3s3&content-id=amzn1.sym.ed470844-7314-4717-8e3f-b384c77cdbd8&pf_rd_p=ed470844-7314-4717-8e3f-b384c77cdbd8&pf_rd_r=8DGY6JEY6F5GN8HW11E4&pd_rd_wg=UjhVt&pd_rd_r=063e199d-86ac-4c1e-8c00-2d1b9d50f89b"
+
+session5 <- bow(Haircare_url, user_agent = "Educational")
+session5
+
+```
+
+
+
+```{r}
+library(rvest)
+
+amazondf5 <- data.frame()
+
+page5 <- scrape(session5)
+
+price5 <- page5 %>%
+  html_nodes('.a-price .a-offscreen') %>% 
+  html_text(trim = TRUE) %>%
+  gsub("[^0-9\\.]", "", .) %>%
+  head(30)
+  
+description5 <- page5 %>%
+  html_nodes('.a-color-base.a-text-normal') %>% 
+  html_text() %>%
+  head(30)
+
+ratings5 <- page5 %>%
+  html_nodes('.a-icon-alt') %>% 
+  html_text() %>%
+  gsub(" out of 5 stars", "", .) %>%
+  head(30)
+
+amazondf5 <- data.frame(
+  Prices = price5,
+  Descriptions = description5,
+  Ratings = ratings5,
+   stringsAsFactors = FALSE)
+
+amazondf5
+
+```
+6. Describe the data you have extracted.
+7. What will be your use case for the data you have extracted?
+8. Create graphs regarding the use case. And briefly explain it.
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+amazondf_all <- rbind(
+cbind(Category = "Makeup", amazondf1),
+cbind(Category = "Skincare", amazondf2),
+cbind(Category = "Fragrance", amazondf3),
+cbind(Category = "Nail Care", amazondf4),
+cbind(Category = "Hair Care", amazondf5))
+
+amazondf_all$Prices <- as.numeric(amazondf_all$Prices)
+
+avg_prices <- amazondf_all %>%
+group_by(Category) %>%
+summarise(Average_Price = mean(Prices, na.rm = TRUE))
+
+ggplot(avg_prices, aes(x = Category, y = Average_Price, fill = Category)) +
+geom_bar(stat = "identity", show.legend = FALSE, color = "black", width = 0.6) +
+geom_text(aes(label = round(Average_Price, 2)),
+vjust = -0.5, size = 4, color = "black") +
+labs(title = "Average Price Across Product Categories",
+x = "Category",
+y = "Average Price ($)") +
+theme_minimal() +
+scale_fill_brewer(palette = "Set3") +
+theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+9. Graph the price and the ratings for each category. Use basic plotting functions and ggplot2 package.
+
+```{r}
+amazondf1$Category <- "MakeUp"
+amazondf2$Category <- "SkinCare"
+amazondf3$Category <- "HairCare"
+amazondf4$Category <- "Fragrance"
+amazondf5$Category <- "OralCare"
+
+
+combined_df <- rbind(amazondf1, amazondf2, amazondf3, amazondf4, amazondf5)
+
+combined_df$Prices <- as.numeric(combined_df$Prices)
+combined_df$Ratings <- as.numeric(combined_df$Ratings)
+
+
+plot_data <- combined_df[!is.na(combined_df$Prices) & !is.na(combined_df$Ratings), ]
+category_colors <- as.factor(plot_data$Category)
+
+#Basic Plotting
+plot(plot_data$Ratings, plot_data$Prices,
+col = category_colors,
+pch = 19,
+xlab = "Ratings (Out of 5)",
+ylab = "Price ($)",
+main = "Price vs Ratings by Category")
+
+legend("topright", legend = levels(category_colors), col = 1:5, pch = 19)
+
+```
+```{r}
+library(ggplot2)
+
+ggplot(plot_data, aes(x = Ratings, y = Prices, color = Category)) +
+geom_point(size = 3, alpha = 0.7) +
+labs(title = "Price vs Ratings by Category",
+x = "Ratings (Out of 5)",
+y = "Price ($)") +
+theme_minimal() +
+theme(legend.title = element_blank())
+
+```
+10. Rank the products of each category by price and ratings. Explain briefly
+
+```{r}
+library(dplyr)
+
+amazondf1$Category <- "Makeup"
+amazondf2$Category <- "Skincare"
+amazondf3$Category <- "Haircare"
+amazondf4$Category <- "Fragrance"
+amazondf5$Category <- "Oral Care"
+
+combined_df <- rbind(amazondf1, amazondf2, amazondf3, amazondf4, amazondf5)
+
+combined_df$Prices <- as.numeric(combined_df$Prices)
+combined_df$Ratings <- as.numeric(combined_df$Ratings)
+
+ranked_df <- combined_df %>%
+arrange(Category, desc(Ratings), Prices) %>%
+group_by(Category) %>%
+mutate(Rank = row_number())
+
+top_ranked <- ranked_df %>%
+filter(Rank <= 5)
+
+top_ranked
+```
+```{r}
+library(ggplot2)
+
+ggplot(top_ranked, aes(x = reorder(Descriptions, -Rank), y = Ratings, fill = Category)) +
+geom_col(show.legend = FALSE) +
+coord_flip() +
+labs(
+title = "Top 5 Ranked Products by Category",
+x = "Product Description",
+y = "Ratings (Out of 5)") +
+facet_wrap(~Category, scales = "free_y") +
+theme_minimal()
+
+```
+
 
