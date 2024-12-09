@@ -1,0 +1,103 @@
+---
+title: "RWorksheet#5b_group(freires,rocillo,sanico)"
+output: html_document
+date: "2024-11-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. Select 5 categories from Amazon and select 30 products from each category. 
+
+2. Out of the 30 products, pick 10 products and extract 20 reviews in each one which includes reviewer, date, individual rating, text review, title of review, and verified purchase.
+
+```{r}
+library(rvest)
+library(dplyr)
+
+product_url <- c( 'https://www.amazon.com/Maybelline-Superstay-Long-Lasting-Pigmented-Pathfinder/dp/B07W3PVLW1/ref=sr_1_1_sspa?crid=1T047TIYTCQV2&dib=eyJ2IjoiMSJ9.DUKcUV74BV1EdjFXCPz4bLy7KMO7W9jLitoZ5HhvE-emZKn25YdUIa3En0oxp_vOVvTZOKhzypsMcIJFF-fku5LUM-3-i7Fcp45kgngbHGmn_gSzdL3SAjH5FPJwutSKtlqqYDz8QgDq1XolonfriagprEHYUbOl90nKruGOy6XokUs-IjAy6CJq5Fd_lCA3A9yrIi47r78KQ60UXPONj2fUwHgdDyF62Yf-jg6Dx3kXf0sMyPIXA6qN_GjuZwrjMO0czBoj4VIuMOFqh0tdLucAg96vwKln1ZiO2xwAF1M.7nthZRUdH1HfRFvgQUyw2FqrQvY15tzb7hN0tF2Q2qU&dib_tag=se&keywords=lipstick&qid=1733497736&sprefix=lip%2Caps%2C436&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&th=1', #1  
+                   
+  'https://www.amazon.com/Maybelline-Longwear-No-Budge-Lipcolor-Pigmented/dp/B09QH7SS43/ref=sr_1_2_sspa?crid=1T047TIYTCQV2&dib=eyJ2IjoiMSJ9.DUKcUV74BV1EdjFXCPz4bLy7KMO7W9jLitoZ5HhvE-foV6iYmArZy-6wdTi1n-D4UjkBKVConiSIJLy_RMTrLHMgqjrn8V0pMsC9XhegFg5TrdeWGde4os1GTLam-SusFRmHZcUAMClD7q3B_kISwyuKjnJbiWdNKS8Fa-ewoiQnU6cbjRs4v5iuu1d5ztCeFZhSV7skPR52E_kYQgPpkR5SN2OQIAwHlP0DE_9NCI1iUNJJKHUGPcNRmifNqqnS6h1BgYYzii8FsRcKDconrZ5wSBEWk8-F-e4FbKSUipg.Ogfvug8KUkvQ-AjP5Senp0EvXEGHyzIrS9h5p8Fc3k8&dib_tag=se&keywords=lipstick&qid=1733497444&sprefix=lip%2Caps%2C436&sr=8-2-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1', #2
+  
+  'https://www.amazon.com/Liquid-Lipstick-Long-Lasting-Non-Stick-Waterproof/dp/B083QNQQP9/ref=sr_1_7?crid=1T047TIYTCQV2&dib=eyJ2IjoiMSJ9.DUKcUV74BV1EdjFXCPz4bLy7KMO7W9jLitoZ5HhvE-f5sRfjEX1vbwUBOS59wCcyCJRTrPBDX_Av2wMyl3Ubo3Mgqjrn8V0pMsC9XhegFg7N1LNM3ub8X3spzRZJslfV-FJB5LNDeTOSSfAjJOR_hyuKjnJbiWdNKS8Fa-ewoiQnU6cbjRs4v5iuu1d5ztCeFZhSV7skPR52E_kYQgPpkR5SN2OQIAwHlP0DE_9NCI1iUNJJKHUGPcNRmifNqqnS6h1BgYYzii8FsRcKDconrYj7Ec_y9Nq_7bV4NBEna3A.EQ1pV3ME24iysmz87skE1HaVEDeynnaytlvBjChYtiI&dib_tag=se&keywords=lipstick&qid=1733502170&sprefix=lip%2Caps%2C436&sr=8-7', #3
+  
+  'https://www.amazon.com/Lipstick-FirstFly-Nutritious-Moisturizer-Temperature/dp/B078VR8SHC/ref=sr_1_8?crid=1T047TIYTCQV2&dib=eyJ2IjoiMSJ9.DUKcUV74BV1EdjFXCPz4bLy7KMO7W9jLitoZ5HhvE-f5sRfjEX1vbwUBOS59wCcyCJRTrPBDX_Av2wMyl3Ubo3Mgqjrn8V0pMsC9XhegFg7N1LNM3ub8X3spzRZJslfV-FJB5LNDeTOSSfAjJOR_hyuKjnJbiWdNKS8Fa-ewoiQnU6cbjRs4v5iuu1d5ztCeFZhSV7skPR52E_kYQgPpkR5SN2OQIAwHlP0DE_9NCI1iUNJJKHUGPcNRmifNqqnS6h1BgYYzii8FsRcKDconrYj7Ec_y9Nq_7bV4NBEna3A.EQ1pV3ME24iysmz87skE1HaVEDeynnaytlvBjChYtiI&dib_tag=se&keywords=lipstick&qid=1733502170&sprefix=lip%2Caps%2C436&sr=8-8', # 4
+  
+  'https://www.amazon.com/wet-wild-Hydrating-Formulated-Cruelty-Free/dp/B010GNWPMQ/ref=sr_1_9?crid=1T047TIYTCQV2&dib=eyJ2IjoiMSJ9.DUKcUV74BV1EdjFXCPz4bLy7KMO7W9jLitoZ5HhvE-f5sRfjEX1vbwUBOS59wCcyCJRTrPBDX_Av2wMyl3Ubo3Mgqjrn8V0pMsC9XhegFg7N1LNM3ub8X3spzRZJslfV-FJB5LNDeTOSSfAjJOR_hyuKjnJbiWdNKS8Fa-ewoiQnU6cbjRs4v5iuu1d5ztCeFZhSV7skPR52E_kYQgPpkR5SN2OQIAwHlP0DE_9NCI1iUNJJKHUGPcNRmifNqqnS6h1BgYYzii8FsRcKDconrYj7Ec_y9Nq_7bV4NBEna3A.EQ1pV3ME24iysmz87skE1HaVEDeynnaytlvBjChYtiI&dib_tag=se&keywords=lipstick&qid=1733502170&sprefix=lip%2Caps%2C436&sr=8-9', # 5
+  
+  'https://www.amazon.com/LAURA-GELLER-NEW-YORK-Lightweight/dp/B08MHYGT3L/ref=sr_1_10?crid=1T047TIYTCQV2&dib=eyJ2IjoiMSJ9.DUKcUV74BV1EdjFXCPz4bLy7KMO7W9jLitoZ5HhvE-f5sRfjEX1vbwUBOS59wCcyCJRTrPBDX_Av2wMyl3Ubo3Mgqjrn8V0pMsC9XhegFg7N1LNM3ub8X3spzRZJslfV-FJB5LNDeTOSSfAjJOR_hyuKjnJbiWdNKS8Fa-ewoiQnU6cbjRs4v5iuu1d5ztCeFZhSV7skPR52E_kYQgPpkR5SN2OQIAwHlP0DE_9NCI1iUNJJKHUGPcNRmifNqqnS6h1BgYYzii8FsRcKDconrYj7Ec_y9Nq_7bV4NBEna3A.EQ1pV3ME24iysmz87skE1HaVEDeynnaytlvBjChYtiI&dib_tag=se&keywords=lipstick&qid=1733502170&sprefix=lip%2Caps%2C436&sr=8-10', #6
+  
+  'https://www.amazon.com/BINGBRUSH-Longwear-Lipstick-Ultimate-Collection/dp/B0CWNTGGTH/ref=sr_1_14_sspa?crid=1T047TIYTCQV2&dib=eyJ2IjoiMSJ9.DUKcUV74BV1EdjFXCPz4bLy7KMO7W9jLitoZ5HhvE-f5sRfjEX1vbwUBOS59wCcyCJRTrPBDX_Av2wMyl3Ubo3Mgqjrn8V0pMsC9XhegFg7N1LNM3ub8X3spzRZJslfV-FJB5LNDeTOSSfAjJOR_hyuKjnJbiWdNKS8Fa-ewoiQnU6cbjRs4v5iuu1d5ztCeFZhSV7skPR52E_kYQgPpkR5SN2OQIAwHlP0DE_9NCI1iUNJJKHUGPcNRmifNqqnS6h1BgYYzii8FsRcKDconrYj7Ec_y9Nq_7bV4NBEna3A.EQ1pV3ME24iysmz87skE1HaVEDeynnaytlvBjChYtiI&dib_tag=se&keywords=lipstick&qid=1733502170&sprefix=lip%2Caps%2C436&sr=8-14-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9tdGY&psc=1', #7 
+  
+  'https://www.amazon.com/evpct-Velvet-Lipstick-Lasting-Waterproof/dp/B0DBQN64DH/ref=sr_1_22_sspa?crid=1T047TIYTCQV2&dib=eyJ2IjoiMSJ9.DUKcUV74BV1EdjFXCPz4bLy7KMO7W9jLitoZ5HhvE-f5sRfjEX1vbwUBOS59wCcyCJRTrPBDX_Av2wMyl3Ubo3Mgqjrn8V0pMsC9XhegFg7N1LNM3ub8X3spzRZJslfV-FJB5LNDeTOSSfAjJOR_hyuKjnJbiWdNKS8Fa-ewoiQnU6cbjRs4v5iuu1d5ztCeFZhSV7skPR52E_kYQgPpkR5SN2OQIAwHlP0DE_9NCI1iUNJJKHUGPcNRmifNqqnS6h1BgYYzii8FsRcKDconrYj7Ec_y9Nq_7bV4NBEna3A.EQ1pV3ME24iysmz87skE1HaVEDeynnaytlvBjChYtiI&dib_tag=se&keywords=lipstick&qid=1733502170&sprefix=lip%2Caps%2C436&sr=8-22-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9tdGY&psc=1', # 8
+  
+  'https://www.amazon.com/Peripera-High-Pigmentation-Lightweight-Moisturizing-PEACHLIGHT/dp/B0B2QWRQVL/ref=sr_1_2_sspa?crid=1T047TIYTCQV2&dib=eyJ2IjoiMSJ9.DUKcUV74BV1EdjFXCPz4bLy7KMO7W9jLitoZ5HhvE-f5sRfjEX1vbwUBOS59wCcyCJRTrPBDX_Av2wMyl3Ubo3Mgqjrn8V0pMsC9XhegFg7N1LNM3ub8X3spzRZJslfV-FJB5LNDeTOSSfAjJOR_hyuKjnJbiWdNKS8Fa-ewoiQnU6cbjRs4v5iuu1d5ztCeFZhSV7skPR52E_kYQgPpkR5SN2OQIAwHlP0DE_9NCI1iUNJJKHUGPcNRmifNqqnS6h1BgYYzii8FsRcKDconrYj7Ec_y9Nq_7bV4NBEna3A.EQ1pV3ME24iysmz87skE1HaVEDeynnaytlvBjChYtiI&dib_tag=se&keywords=lipstick&qid=1733502170&sprefix=lip%2Caps%2C436&sr=8-2-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1', # 9
+  
+  'https://www.amazon.com/Flower-Knows-Gloss-Glowy-Moisturizing-Lacquer-Hydrating/dp/B0DDPLLJJ7/ref=sr_1_20_sspa?crid=1T047TIYTCQV2&dib=eyJ2IjoiMSJ9.DUKcUV74BV1EdjFXCPz4bLy7KMO7W9jLitoZ5HhvE-f5sRfjEX1vbwUBOS59wCcyCJRTrPBDX_Av2wMyl3Ubo3Mgqjrn8V0pMsC9XhegFg7N1LNM3ub8X3spzRZJslfV-FJB5LNDeTOSSfAjJOR_hyuKjnJbiWdNKS8Fa-ewoiQnU6cbjRs4v5iuu1d5ztCeFZhSV7skPR52E_kYQgPpkR5SN2OQIAwHlP0DE_9NCI1iUNJJKHUGPcNRmifNqqnS6h1BgYYzii8FsRcKDconrYj7Ec_y9Nq_7bV4NBEna3A.EQ1pV3ME24iysmz87skE1HaVEDeynnaytlvBjChYtiI&dib_tag=se&keywords=lipstick&qid=1733502170&sprefix=lip%2Caps%2C436&sr=8-20-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9tdGY&psc=1')
+
+scrape_reviews <- function(product_url) {
+  
+  review_page <- read_html(product_url)
+  
+  # Product name
+  product_name <- review_page %>% 
+    html_nodes('span#productTitle') %>% 
+    html_text() %>%
+    trimws()
+
+  # Reviewers
+  reviewers <- review_page %>%
+    html_nodes('.a-profile-name') %>%
+    html_text()
+
+  # Review dates
+  review_dates <- review_page %>%
+    html_nodes('.a-size-base.a-color-secondary.review-date') %>%
+    html_text()
+  
+  review_dates_clean <- gsub("Reviewed in the United States on ", "", review_dates)
+  
+   # Review titles
+  review_titles <- review_page %>%
+    html_nodes('.review-title') %>%
+    html_text()
+  review_titles_clean <- gsub("\\d+\\.\\d+ out of 5 stars", "", review_titles)
+review_titles_clean <- trimws(review_titles_clean)
+
+ # Extract Verified Purchase status
+  verified_purchase <- review_page %>%
+    html_nodes('span[data-hook="avp-badge-linkless"]') %>%
+    html_text()
+
+# Review Texts
+  review_texts <- review_page %>%
+    html_nodes('div[data-hook="review-collapsed"] span') %>%
+    html_text() %>%
+    trimws()
+  
+   # DataFrame
+  reviews <- data.frame(
+    Product = product_name[1:20],
+    Reviewer = reviewers[1:20],
+    Date = review_dates[1:20],
+    ReviewTitle = review_titles[1:20],
+ ReviewText = review_texts[1:20],
+    VerifiedPurchase = verified_purchase[1:20],
+    stringsAsFactors = FALSE
+  )
+  
+  return(reviews)
+}
+
+all_reviews <- lapply(product_urls, scrape_reviews)
+reviews_df <- bind_rows(all_reviews)
+
+print(reviews_df)
+
+```
+ 
+ 
+ 
+ 
+ 
