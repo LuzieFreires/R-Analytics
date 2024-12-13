@@ -487,9 +487,24 @@ amazondf5 <- data.frame(
 amazondf5
 
 ```
+
 6. Describe the data you have extracted.
+
+- The extracted data provides insights into two domains: IMDb's top 50 TV shows and Amazon products across five categories. We captured details from IMDb, including rank, title, rating, number of votes, episodes, release year, user and critic reviews, and popularity ratings, to provide a comprehensive view of audience reception and critical acclaim. For Amazon, data on 30 products in categories like makeup, skincare, and hair care include prices, descriptions, ratings, and reviews, reflecting consumer preferences and trends. This structured data facilitates analysis of entertainment and e-commerce trends, enabling deeper insights into user behavior and market dynamics.
+
+
 7. What will be your use case for the data you have extracted?
+
+- The extracted data is useful for a variety of applications, including entertainment and e-commerce analysis. It can be used by IMDb to determine audience preference trends, examine the relationship between popularity and ratings, and assess critical reception over time. This can help with content creation decisions or viewer recommendations. 
+
+  Amazon uses the data to gain insight into consumer behavior, such as finding popular products, examining price-to-rating connections, and researching review sentiments. Businesses can use these insights to improve customer satisfaction, optimize product offers, and improve marketing efforts. When combined, the datasets offer useful information for data-driven decision-making in the retail and media industries.
+
+
 8. Create graphs regarding the use case. And briefly explain it.
+- The bar chart compares average prices across product categories like Makeup, Skincare, and Fragrance. Each bar's height shows how expensive a category is, with Fragrance possibly being the priciest and Nail Care among the cheapest.
+
+  The simple design, clear labels, and distinct colors make it easy to spot trends, such as which categories are more premium. This insight helps businesses understand pricing differences and make better market decisions.
+
 
 ```{r}
 library(ggplot2)
@@ -589,6 +604,8 @@ filter(Rank <= 5)
 
 top_ranked
 ```
+
+- This ranks products in each category (Makeup, Skincare, Haircare, Fragrance, Oral Care) by ratings (descending) and price (ascending for ties). It combines data from multiple dataframes, ensures numeric formatting for Prices and Ratings, and groups by category to assign ranks. The top 5 products per category are extracted into a new dataframe, top_ranked, for further analysis or display.
 ```{r}
 library(ggplot2)
 
@@ -603,5 +620,3 @@ facet_wrap(~Category, scales = "free_y") +
 theme_minimal()
 
 ```
-
-
