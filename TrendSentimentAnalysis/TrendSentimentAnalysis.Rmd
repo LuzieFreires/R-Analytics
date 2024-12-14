@@ -291,3 +291,54 @@ set.seed(1234)
 wordcloud(words = wordCorpus, scale=c(5,0.1), max.words=500,
           random.order=FALSE, rot.per=0.35, use.r.layout=FALSE, colors=pal)
 ```
+
+
+
+```{r}
+library(syuzhet)
+
+tweetsP <- data.frame(text = sapply(wordCorpus, as.character), stringsAsFactors = FALSE)
+
+tweetSentiments <- get_sentiment(tweetsP$text,method = "syuzhet")
+tweets <- cbind(tweetsP, tweetSentiments)
+
+tweets$sentiment <- sapply(tweets$tweetSentiments,eSentiment)
+
+df <- head(tweets, n = 50)
+df
+
+class(tweets)
+```
+```{r}
+qplot(tweets$tweetSentiments) + theme(legend.position="none") + 
+  xlab("Sentiment Score") +
+  ylab("Number of tweets") + 
+  ggtitle("Tweets by Sentiment Score")
+```
+
+```{r}
+count_sentiment <- tweets %>%
+  count(tweets$sentiment)
+count_sentiment
+```
+
+```{r}
+ggplot(tweets, aes(sentiment, fill = sentiment)) +
+  geom_bar() +
+  theme(legend.position="none", axis.title.x = element_blank()) +
+  ylab("Number of tweets") +
+  ggtitle("Tweets by Sentiment")
+```
+
+```{r}
+tweetSentiments <- get_nrc_sentiment(tweetsP$text)
+df_d <- head(tweetSentiments)[,c(1:8)]
+df_d
+
+tweetsP$text[6:10]
+
+tweetsS <- cbind(tweets, tweetSentiments)
+tweetsSdf <- head(tweetsS)[,c(1,4:11)]
+tweetsSdf
+```
+
