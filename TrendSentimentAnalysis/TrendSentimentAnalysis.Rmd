@@ -1,0 +1,293 @@
+---
+title: "TrendSentimentAnalysis(freires,rociilo,sanico)"
+output: pdf_document
+date: "2024-12-14"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(twitteR)
+library(rtweet)
+library(ggplot2)
+library(tm) 
+library(wordcloud) 
+library(syuzhet) 
+library(RColorBrewer) 
+library(stringr) 
+library(dplyr) 
+library(tidytext) 
+
+tweetsd <- read.csv("/cloud/project/tweetsDF.csv")
+```
+
+```{r}
+save(tweetsDF, file = "/cloud/project/tweetsDF.RData")
+load("tweetsDF.RData")
+
+tweetsd <- tweetsDF
+
+class(tweetsd)
+str(tweetsd)
+
+```
+```{r}
+eSource <- function(x) {
+  if(grepl(">Twitter for iPhone</a>", x)){
+    "iphone"
+  }else if(grepl(">Twitter for iPad</a>", x)){
+    "ipad"
+  }else if(grepl(">Twitter for Android</a>", x)){
+    "android"
+  } else if(grepl(">Twitter Web Client</a>", x)){
+    "Web"
+  } else if(grepl(">Twitter for Windows Phone</a>", x)){
+    "windows phone"
+  }else if(grepl(">dlvr.it</a>", x)){
+    "dlvr.it"
+  }else if(grepl(">IFTTT</a>", x)){
+    "ifttt"
+  }else if(grepl(">EarthquakeTrack.com</a>", x)){
+    "earthquaketrack"
+  }else if(grepl(">Did You Feel It</a>", x)){
+    "did_you_feel_it"
+  }else if(grepl(">Earthquake Mobile</a>", x)){
+    "earthquake_mobile"
+  }else if(grepl(">Facebook</a>", x)){ 
+    "facebook"
+  }else {
+    "others"
+  }
+}
+
+```
+
+
+```{r}
+eSentiment <- function(x) {
+  if(x <= -0.5){
+    "1) very negative"
+  }else if(x > -0.5 & x < 0){
+    "2) negative"
+  }else if(x > 0 & x < 0.5){
+    "4) positive"
+  }else if(x >= 0.5){
+    "5) very positive"
+  }else {
+    "3) neutral"
+  }
+}
+```
+
+```{r}
+dim(tweetsd)
+sapply(tweetsd, function(x) sum(is.na(x)))
+```
+
+```{r}
+tweetsd$created <- as.POSIXct(tweetsd$created)
+```
+
+```{r}
+ggplot(data = tweetsd, aes(x = created)) +
+  geom_histogram(aes(fill = after_stat(count))) +
+  theme(legend.position = "none") +
+  xlab("Time") + ylab("The Number of tweets") +
+  scale_fill_gradient(low = "lightblue", high = "darkred")
+```
+
+```{r}
+library(dplyr)
+library(magrittr)
+
+
+tweetsd %>%  
+  summarise(max = max(created, na.rm = TRUE), 
+            min = min(created, na.rm = TRUE))
+
+tweetsd %<>% 
+  mutate(Created_At_Round = created %>% 
+           as.POSIXct() %>% 
+           round(units = 'hours'))
+
+dim(tweetsd)
+```
+
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+tweetsStripDF <- tweetsStripDF %>%
+  mutate(Created_At_Round = as.POSIXct(Created_At_Round, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")) %>%
+  filter(!is.na(Created_At_Round))
+
+tweetsStripDF %>%
+  dplyr::count(Created_At_Round) %>%
+  arrange(Created_At_Round) %>%
+  ggplot(mapping = aes(x = Created_At_Round, y = n)) +
+  geom_line(color = "pink", linewidth = 1) +
+  theme_light() +
+  xlab(label = "Date") +
+  ylab(label = "Number of Tweets") +
+  ggtitle(label = "Number of Tweets by Date") +
+  scale_x_datetime(date_labels = "%b %d", date_breaks = "1 week")
+```
+
+
+```{r}
+tweetsd$tweetSource = sapply(tweetsd$statusSource, eSource)
+
+ggplot(tweetsd[tweetsd$tweetSource != 'others',], 
+       aes(tweetSource,fill = tweetSource)) +
+  geom_bar() +
+  theme(legend.position="none",
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ylab("Number of tweets") +
+  ggtitle("Tweets by Source")
+```
+
+```{r}
+library(tm)
+library(NLP)
+
+namesCorpus <- Corpus(VectorSource(tweetsStripDF$screenName))
+
+str(namesCorpus)
+
+inspect(namesCorpus[1:5])
+```
+
+```{r}
+namesCorpus <- Corpus(VectorSource(tweetsd$screenName)) 
+
+class(tweetsd$screenName)
+class(VectorSource(tweetsd$screenName))
+str(namesCorpus)
+class(namesCorpus)
+```
+
+```{r}
+library(RColorBrewer)
+library(wordcloud)
+
+pal <- brewer.pal(9,"YlGnBu")
+pal <- pal[-(1:4)]
+
+set.seed(1234)
+wordcloud(words = namesCorpus, 
+          min.freq = 5, 
+          scale=c(5,0.1), 
+          max.words=100, 
+          random.order=FALSE,
+          rot.per=0.5, 
+          use.r.layout=TRUE, 
+          colors=pal)
+```
+
+```{r}
+library(stringr)
+
+head(tweetsd$text)
+
+nohandles <- tweetsd
+nohandles$text <- str_replace_all(nohandles$text, "(RT|via)((?:\\b\\W*@\\w+)+)", "")
+
+nohandles$text <- gsub("http.*", "", nohandles$text)
+
+head(nohandles$text)[1:5]
+
+nohandles$text <- gsub("https.*", "", nohandles$text)
+
+head(nohandles$text)[1:5]
+```
+
+
+```{r}
+nohandles$cleanedText <- nohandles$text
+nohandles$cleanedText <- gsub("@\\w+", "", nohandles$cleanedText)
+nohandles$cleanedText <- gsub("^\\s+|\\s+$", "", nohandles$cleanedText)
+nohandles$cleanedText <- gsub("[ \t]{2,}", "", nohandles$cleanedText)
+
+head(nohandles$cleanedText)[1:5]
+```
+
+```{r}
+nohandles$cleanedText = gsub("[[:punct:]]", "", nohandles$cleanedText)
+nohandles$cleanedText = gsub("[[:digit:]]", "", nohandles$cleanedText)
+
+head(nohandles$cleanedText)[1:5]
+```
+
+```{r}
+nohandles$cleanedText <- str_replace_all(nohandles$cleanedText, "[^[:alnum:]]", " ")
+
+nohandles$cleanedText <- str_replace_all(nohandles$cleanedText,
+                                         "[[^a-zA-Z0-9]]", " ")
+head(nohandles$cleanedText)[1:5]
+```
+
+```{r}
+nohandles$cleanedText <- str_replace_all(nohandles$cleanedText," "," ")
+
+
+nohandles$cleanedText <- str_replace_all(nohandles$cleanedText,"#[a-z,A-Z]*","")
+
+nohandles$cleanedText <- str_replace_all(nohandles$cleanedText,"@[a-z,A-Z]*","")
+head(nohandles$cleanedText)
+```
+
+
+```{r}
+wordCorpus <- Corpus(VectorSource(nohandles$cleanedText))
+wordCorpus[[1]]$content
+
+wordCorpus <- tm_map(wordCorpus, removePunctuation)
+
+wordCorpus[[1]]$content
+wordCorpus <- tm_map(wordCorpus, removeNumbers)
+
+wordCorpus <- tm_map(wordCorpus, content_transformer(tolower))
+wordCorpus[[1]]$content
+
+wordCorpus <- tm_map(wordCorpus, removeWords, stopwords("english"))
+wordCorpus[[1]]$content
+wordCorpus <- tm_map(wordCorpus, removeWords, stopwords("SMART"))
+wordCorpus$content[1:10]
+```
+
+```{r}
+wordCorpus <- tm_map(wordCorpus, removeWords, c("km","wnw","nnw","sic","gmt","ak","dpt","baya","deprem","ca","mag",
+                                                "balikesir","ix","ts","ese",
+                                                "iclr","se","ml","sai","mae",
+                                                "ssw","sd","sse","tx","slc",
+                                                "la","ne","wsw"))
+wordCorpus$content[1:10]
+
+wordCorpus <- tm_map(wordCorpus, removeWords, c("ferizaj","ingv","ussita","utc", "usgs","bal","kesir","cyn"))
+wordCorpus$content[50:65]
+```
+
+```{r}
+wordCorpus <- tm_map(wordCorpus, stripWhitespace)
+wordCorpus$content[1:10]
+wordCorpus$content[50:60]
+wordCorpus$content[500:540]
+```
+
+```{r}
+set.seed(1234)
+wordcloud(words = wordCorpus, min.freq = 1,
+          max.words=200, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
+
+pal <- brewer.pal(9,"YlGnBu")
+pal <- pal[-(1:4)]
+set.seed(1234)
+
+wordcloud(words = wordCorpus, scale=c(5,0.1), max.words=500,
+          random.order=FALSE, rot.per=0.35, use.r.layout=FALSE, colors=pal)
+```
