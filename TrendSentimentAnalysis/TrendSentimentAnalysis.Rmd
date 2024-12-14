@@ -331,14 +331,39 @@ ggplot(tweets, aes(sentiment, fill = sentiment)) +
 ```
 
 ```{r}
-tweetSentiments <- get_nrc_sentiment(tweetsP$text)
-df_d <- head(tweetSentiments)[,c(1:8)]
-df_d
+library(tidytext)
+library(dplyr)
 
-tweetsP$text[6:10]
+nrc_sentiments <- get_sentiments("nrc")
 
-tweetsS <- cbind(tweets, tweetSentiments)
-tweetsSdf <- head(tweetsS)[,c(1,4:11)]
-tweetsSdf
+tweets_words <- tweetsP %>%
+  unnest_tokens(word, text)
+
+tweet_sentiments <- tweets_words %>%
+  inner_join(nrc_sentiments, by = "word")
+
+sentiment_scores <- tweet_sentiments %>%
+  count(sentiment) %>%
+  spread(sentiment, n, fill = 0)
+
+head(sentiment_scores)
+```
+```{r}
+sentimentTotals <- as.data.frame(colSums(tweetsS[,c(4:11)]))
+
+names(sentimentTotals) <- "count"
+sentimentTotals <- cbind("sentiment" = rownames(sentimentTotals), sentimentTotals)
+rownames(sentimentTotals) <- NULL
+sentimentTotals
+```
+
+
+```{r}
+library(ggplot2)
+
+ggplot(data = sentimentTotals, aes(x = sentiment, y = count)) +
+  geom_bar(aes(fill = sentiment), stat = "identity") +
+  theme(legend.position = "none") +
+  xlab("Sentiments") + ylab("Total Count") + ggtitle("Total Sentiment Score for All Tweets")
 ```
 
