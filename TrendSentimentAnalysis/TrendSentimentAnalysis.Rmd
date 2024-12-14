@@ -25,13 +25,12 @@ tweetsd <- read.csv("/cloud/project/tweetsDF.csv")
 
 ```{r}
 save(tweetsDF, file = "/cloud/project/tweetsDF.RData")
-load("tweetsDF.RData")
+load("/cloud/project/tweetsDF.RData")
 
 tweetsd <- tweetsDF
 
 class(tweetsd)
 str(tweetsd)
-
 ```
 ```{r}
 eSource <- function(x) {
@@ -102,7 +101,6 @@ ggplot(data = tweetsd, aes(x = created)) +
 library(dplyr)
 library(magrittr)
 
-
 tweetsd %>%  
   summarise(max = max(created, na.rm = TRUE), 
             min = min(created, na.rm = TRUE))
@@ -115,16 +113,15 @@ tweetsd %<>%
 dim(tweetsd)
 ```
 
-
 ```{r}
 library(ggplot2)
 library(dplyr)
 
-tweetsStripDF <- tweetsStripDF %>%
+tweetsd <- tweetsDF %>%
   mutate(Created_At_Round = as.POSIXct(Created_At_Round, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")) %>%
   filter(!is.na(Created_At_Round))
 
-tweetsStripDF %>%
+tweetsd %>%
   dplyr::count(Created_At_Round) %>%
   arrange(Created_At_Round) %>%
   ggplot(mapping = aes(x = Created_At_Round, y = n)) +
@@ -154,7 +151,7 @@ ggplot(tweetsd[tweetsd$tweetSource != 'others',],
 library(tm)
 library(NLP)
 
-namesCorpus <- Corpus(VectorSource(tweetsStripDF$screenName))
+namesCorpus <- Corpus(VectorSource(tweetsd$screenName))
 
 str(namesCorpus)
 
@@ -292,8 +289,6 @@ wordcloud(words = wordCorpus, scale=c(5,0.1), max.words=500,
           random.order=FALSE, rot.per=0.35, use.r.layout=FALSE, colors=pal)
 ```
 
-
-
 ```{r}
 library(syuzhet)
 
@@ -309,6 +304,7 @@ df
 
 class(tweets)
 ```
+
 ```{r}
 qplot(tweets$tweetSentiments) + theme(legend.position="none") + 
   xlab("Sentiment Score") +
@@ -331,23 +327,17 @@ ggplot(tweets, aes(sentiment, fill = sentiment)) +
 ```
 
 ```{r}
-library(tidytext)
-library(dplyr)
+tweetSentiments <- get_nrc_sentiment(tweetsP$text)
+df_d <- head(tweetSentiments)[,c(1:8)]
+df_d
 
-nrc_sentiments <- get_sentiments("nrc")
+tweetsP$text[6:10]
 
-tweets_words <- tweetsP %>%
-  unnest_tokens(word, text)
-
-tweet_sentiments <- tweets_words %>%
-  inner_join(nrc_sentiments, by = "word")
-
-sentiment_scores <- tweet_sentiments %>%
-  count(sentiment) %>%
-  spread(sentiment, n, fill = 0)
-
-head(sentiment_scores)
+tweetsS <- cbind(tweets, tweetSentiments)
+tweetsSdf <- head(tweetsS)[,c(1,4:11)]
+tweetsSdf
 ```
+
 ```{r}
 sentimentTotals <- as.data.frame(colSums(tweetsS[,c(4:11)]))
 
@@ -357,13 +347,51 @@ rownames(sentimentTotals) <- NULL
 sentimentTotals
 ```
 
-
 ```{r}
-library(ggplot2)
-
 ggplot(data = sentimentTotals, aes(x = sentiment, y = count)) +
   geom_bar(aes(fill = sentiment), stat = "identity") +
   theme(legend.position = "none") +
   xlab("Sentiments") + ylab("Total Count") + ggtitle("Total Sentiment Score for All Tweets")
+```
+
+```{r}
+wordtoken <- tweetsP %>%
+  unnest_tokens("word",text) 
+```
+
+```{r}
+write.csv(wordtoken,file = "word_token.csv" )
+```
+
+```{r}
+head(wordtoken)
+```
+
+```{r}
+wordcount_token <- wordtoken %>%
+  count(word) %>%
+  arrange(desc(n))
+
+head(wordcount_token)
+str(wordcount_token)
+```
+
+```{r}
+write.csv(wordcount_token,file = "data/word_count.csv" )
+```
+
+```{r}
+library(wordcloud2)
+wordcloud2(wordcount_token, 
+           size = 1.0, 
+           shape = 'star',
+           color = "random-light", 
+           backgroundColor = "violet")
+
+wordcloud2(wordcount_token, 
+           size = 2, 
+           minRotation = -pi/6, 
+           maxRotation = -pi/6,
+           rotateRatio = 1)
 ```
 
